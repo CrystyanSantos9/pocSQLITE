@@ -1,0 +1,82 @@
+const { Database } = require('sqlite3')
+
+//verbose -- expõe mais informações sobre as operações realizadas
+const sqlite = require('sqlite3').verbose()
+
+//melhorando o gerenciamento de criação e iniciação do nosso banco 
+const initDB = databasefile => new Promise((resolve, reject)=>{
+    //database é o documento referente ao banco de dados criado
+    const db = new sqlite.Database(databasefile, (err)=>{
+        //se erro, rejeitamos e retornamos o erro
+        if(err){
+            reject(err)
+        }
+        //se não devolvemos a criação do banco de dados 
+        resolve(db)
+    })
+})
+
+//tornando o método de criação assíncrono e desacoplado
+//run recebe sua dependencia de execução (DB que é a conexão com o banco)
+//e a nossa query, que pode ser de criação, leitura, ou gerenciamento
+const run = (db, query) => new Promise((resolve, reject)=>{
+    db.run(query, err =>{
+        if(err){
+            reject(err)
+        }
+        resolve()
+    })
+})
+
+//criando um método de criação de tabelas mais abrangente para o nosso banco de dados
+//com isso podemos criar mais de uma estrutura de tabela, tornando o código mais portável
+
+// const query = `
+// CREATE TABLE IF NOT EXISTS categories (
+//     id INTEGER PRIMARY KEY NOT NULL, 
+//     category TEXT
+// );
+// `
+
+// const query = `
+// CREATE TABLE IF NOT EXISTS products (
+//     id INTEGER PRIMARY KEY NOT NULL, 
+//     product TEXT
+//     price REAL
+// );
+// `
+
+// const query = `
+// CREATE TABLE IF NOT EXISTS images (
+//     id INTEGER PRIMARY KEY NOT NULL, 
+//     description TEXT,
+//     price REAL,
+//     product_id INTEGER REFERENCES products(id)
+// );
+// `
+
+// const query = `
+// CREATE TABLE IF NOT EXISTS categories_products (
+//        product_id INTEGER REFERENCES products(id),
+//        category_id INTEGER REFERENCES categories(id)
+// );
+// `
+
+const createTables = async(query)=>{
+    //criamos o método de conexão com o banco utilizando a funcao que criamos
+    const db = await initDB('banco.sqlite3')
+    //aqui utilizamos o método de execução já com a estrutura de função criada 
+    //recebe a conexão e nossa query 
+    await run(db, query)
+    //se tudo correr bem vamos informar isso ao usário 
+    console.log('Table created!')
+}
+
+//por fim executamos nossa função para criação de tabelas 
+
+createTables(query)
+
+
+
+
+
