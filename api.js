@@ -19,6 +19,7 @@ const test = async ()=>{
 // return await products.findall()
 
 // await products.updateCategories( 3, [3,7])
+
 console.log(await products.findAllByCategories(3))
 }
 
